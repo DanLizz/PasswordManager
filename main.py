@@ -1,3 +1,4 @@
+import json
 from tkinter import *
 from tkinter import messagebox
 from random import *
@@ -30,14 +31,31 @@ def save():
     email = email_entry.get()
     password = password_entry.get()
 
+    new_data = {website:
+                    {"email": email,
+                     "password": password
+                     }
+                }
+
     if website == "" or password == "":
         field_empty = messagebox.showinfo(title="Oops", message="Some of the fields are empty")
 
     else:
-        save_info = messagebox.askyesno(title=website, message=f"These are details: \nemail: {email}\npassword: {password}\nAre you sure to proceed?")
-        if save_info:
-            with open("Password_Manager_Data.txt", "a") as data:
-                data.write(f"{website} | {email} | {password}\n")
+        #save_info = messagebox.askyesno(title=website, message=f"These are details: \nemail: {email}\npassword: {password}\nAre you sure to proceed?")
+        #if save_info:
+
+        try:
+            with open("Password_Manager_Data.json", "r") as data_file:
+                data = json.load(data_file)
+                data.update(new_data)
+            with open("Password_Manager_Data.json", "w") as data_file:
+                json.dump(data, data_file, indent=4)
+
+        except FileNotFoundError:
+            with open("Password_Manager_Data.json", "w") as data_file:
+                json.dump(new_data, data_file, indent=4)
+
+        finally:
             website_entry.delete(first=0, last=END)
             password_entry.delete(first=0, last=END)
 
